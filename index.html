@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		html,
+		body {
+		height: 99%;
+		}
+		.box {
+		width: 50%;
+		height: 100%;
+		margin-right: 0px;
+		background: rgb(136, 136, 131);
+		display: inline-block
+		}
+		.rectengular {
+		width: 40px;
+		height: 40px;
+		background: rgb(255, 187, 0);
+		position: absolute;
+		}
+		div.rectengular:hover {
+		cursor: move;
+		}
+		input[type=number]{
+			width: 70px;
+		}
+		.labelTop {
+			position: absolute;
+			top: 10px;
+			margin-left: 10px;
+		}
+		.labelLeft {
+			position: absolute;
+			top: 36px;
+			margin-left: 10px;
+		}
+	</style>
+</head>
+<body>
+	<div id="box" class="box">
+		<div id="rectengular" class="rectengular"></div>
+	</div>
+	<label class="labelTop">Top <input id="inputTop" type="number" value="0" min="0"></label>
+	<label class="labelLeft">Left <input id="inputLeft" type="number" value="0" min="0"></label>
+	<script>
+		let inputLeft = document.getElementById('inputLeft');
+		let inputTop = document.getElementById('inputTop');
+		let rectengular = document.getElementById('rectengular');
+		let box = document.getElementById('box');
+		let bodyMarginLeft = parseFloat(window.getComputedStyle(document.body).getPropertyValue('margin-left'), 10);
+		let bodyMarginTop = parseFloat(window.getComputedStyle(document.body).getPropertyValue('margin-top'), 10);
+		function changePositionByDrag(e) {
+			document.addEventListener('mousemove', drag);
+			rectengular.addEventListener('mouseup', drop);
+		};
+		function drag(e) {
+			let positionX = e.clientX;
+			let positionY = e.clientY;
+			if (positionX - rectengular.offsetWidth / 2 - bodyMarginLeft <= 0) {
+				positionX = rectengular.offsetWidth / 2 + bodyMarginLeft
+			} else if (positionX + rectengular.offsetWidth / 2 >= box.offsetWidth + bodyMarginLeft) {
+				positionX = box.offsetWidth - rectengular.offsetWidth / 2 + bodyMarginLeft
+			};
+			if (positionY - rectengular.offsetHeight / 2 - bodyMarginTop <= 0) {
+				positionY = rectengular.offsetHeight / 2 + bodyMarginTop
+			} else if (positionY + rectengular.offsetHeight / 2 >= box.offsetHeight + bodyMarginTop) {
+				positionY = box.offsetHeight - rectengular.offsetHeight / 2 + bodyMarginTop
+			};
+			inputLeft.value = positionX - rectengular.offsetWidth / 2 - bodyMarginLeft;
+			inputTop.value = positionY - rectengular.offsetHeight / 2 - bodyMarginTop;
+			rectengular.style.left = `${positionX - rectengular.offsetWidth / 2}px`;
+			rectengular.style.top = `${positionY - rectengular.offsetHeight / 2}px`;
+		};
+		function drop() {
+			document.removeEventListener('mousemove', drag);
+		};
+		rectengular.addEventListener("mousedown", changePositionByDrag);
+		function сhangePositionByInput(e) {
+			if (+e.target.value < 0) {
+				e.target.value = 0
+			} else {
+				if (e.target.id === "inputLeft") {
+					if (+e.target.value > box.offsetWidth - rectengular.offsetWidth) {
+						e.target.value = box.offsetWidth - rectengular.offsetWidth
+					};
+					let positionXByInput = parseFloat(`${+e.target.value + bodyMarginLeft}px`, 10);
+					inputLeft.setAttribute("max", box.offsetWidth - rectengular.offsetWidth)
+					rectengular.style.left = `${positionXByInput}px`;
+				} else if (e.target.id === "inputTop") {
+					if (+e.target.value > box.offsetHeight - rectengular.offsetHeight) {
+						e.target.value = box.offsetHeight - rectengular.offsetHeight
+					};
+					let positionYByInput = parseFloat(`${+e.target.value + bodyMarginTop}px`, 10);
+					inputTop.setAttribute("max", box.offsetHeight - rectengular.offsetHeight)
+					rectengular.style.top = `${positionYByInput}px`;
+				}
+			}
+		}
+		inputLeft.addEventListener("input", сhangePositionByInput);
+		inputTop.addEventListener("input", сhangePositionByInput);
+	</script>
+</body>
+</html>
